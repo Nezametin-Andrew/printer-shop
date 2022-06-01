@@ -1,0 +1,26 @@
+version: '3.1'
+
+
+services:
+  web:
+    build:
+      context: ./print_shop/
+      dockerfile: Dockerfile
+    volumes:
+      - ./print_shop/:/usr/src/app
+    ports:
+      - "8000:8000"
+    restart: always
+    command: gunicorn dj_bot.wsgi:application -b 0.0.0.0:8000 --reload
+
+  nginx:
+    build:
+      context: ./print_shop/docker/nginx
+      dockerfile: Dockerfile
+    depends_on:
+      - web
+    ports:
+      - "80:80"
+    volumes:
+      - ./print_shop/static/:/static
+    restart: always
